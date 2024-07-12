@@ -1,8 +1,8 @@
 from io import BytesIO
 from struct import pack
 
-from binary_cookies_reader.models import Flag
-from binary_cookies_reader.reader import (
+from binary_cookies_parser.models import Flag
+from binary_cookies_parser.parser import (
     interpret_flag,
     read_next_date,
     read_next_int,

@@ -1,10 +1,10 @@
 [tool.poetry]
-name = "binary-cookies-reader"
+name = "binary-cookies-parser"
 version = "0.1.1"
-description = "Reads binary cookies from a given .binarycookies file"
+description = "Parses binary cookies from a given .binarycookies file"
 authors = ["Daniel Tom <daniel.tom@xebia.com>"]
 readme = "README.md"
-packages = [{include = "binary_cookies_reader", from="src"}]
+packages = [{include = "binary_cookies_parser", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -13,7 +13,7 @@ pydantic = "^2.8.2"
 pytest = "^8.2.2"
 
 [tool.poetry.scripts]
-bcr = "binary_cookies_reader.__main__:main"
+bcparser = "binary_cookies_parser.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"

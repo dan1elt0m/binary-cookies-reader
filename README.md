@@ -13,7 +13,7 @@ The project is based on the cookie reader written by Satishb3
 
 ## Installation
 ```bash 
-pip install binary-cookies-reader
+pip install binary-cookies-parser
 ```
 If you want to use the bcr CLI, it's recommended to use pipx to install the package in an isolated environment.
 
@@ -21,20 +21,14 @@ If you want to use the bcr CLI, it's recommended to use pipx to install the pack
 After installation, you can use the command-line interface to read a binary cookies file:
 
 ```bash
-bcr <path_to_binary_cookies_file>
+bcparser <path_to_binary_cookies_file>
 ```
 Replace <path_to_binary_cookies_file> with the path to the binary cookie file you want to read.
-
-e.g.,
-
-```bash
-bcr ~/Library/Cookies/Cookies.binarycookies
-```
 
 Or use it in Python:
 
 ```python
-from binary_cookies_reader.reader import read_binary_cookies_file
+from binary_cookies_parser.parser import read_binary_cookies_file
 
 cookies = read_binary_cookies_file("path/to/cookies.binarycookies")
 ```

@@ -3,7 +3,7 @@ from io import BytesIO
 from struct import unpack
 from typing import List
 
-from binary_cookies_reader.models import Cookie, Flag
+from binary_cookies_parser.models import Cookie, Flag
 
 FLAGS = {
     0: "",
