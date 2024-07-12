@@ -4,7 +4,7 @@
 
 # Binary Cookies Reader
 
-This project provides a Python script to read and interpret binary cookie files.
+This project provides a CLI tool to read and interpret binary cookie files.
 The project is based on the cookie reader written by Satishb3 
 
 ## Requirements
