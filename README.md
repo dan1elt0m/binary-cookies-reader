@@ -13,14 +13,9 @@ The project is based on the cookie reader written by Satishb3
 
 ## Installation
 ```bash 
-```bash
-pipx install binary-cookie-reader
+pip install binary-cookies-reader
 ```
-
-or clone the repo and install the dependencies with poetry:
-```bash
-poetry install
-```
+If you want to use the bcr CLI, it's recommended to use pipx to install the package in an isolated environment.
 
 ## Usage
 After installation, you can use the command-line interface to read a binary cookie file:
