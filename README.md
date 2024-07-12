@@ -1,7 +1,3 @@
-[![Python package](https://github.com/binary-cookies-reader/actions/workflows/python-package.yml/badge.svg)](https://github.com/binary-cookies-reader/actions/workflows/python-package.yml)
-[![PyPI version](https://badge.fury.io/py/binary-cookies-reader.svg)](https://badge.fury.io/py/binary-cookies-parser)
-[![CodeQL](https://github.com/binary-cookies-reader/actions/workflows/codeql-analysis.yml/badge.svg)](https://github.com/dan1elt0m/binary-cookies-reader/actions/workflows/codeql-analysis.yml)
-
 # Binary Cookies Reader
 
 This project provides a CLI tool to read and interpret binary cookie files.
