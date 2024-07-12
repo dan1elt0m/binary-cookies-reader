@@ -15,7 +15,7 @@ The project is based on the cookie reader written by Satishb3
 ```bash 
 pip install binary-cookies-parser
 ```
-If you want to use the bcr CLI, it's recommended to use pipx to install the package in an isolated environment.
+If you want to use the parser as CLI, it's recommended to use pipx to install the package in an isolated environment.
 
 ## Usage
 After installation, you can use the command-line interface to read a binary cookies file:
