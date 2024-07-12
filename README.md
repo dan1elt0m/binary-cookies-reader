@@ -18,12 +18,18 @@ pip install binary-cookies-reader
 If you want to use the bcr CLI, it's recommended to use pipx to install the package in an isolated environment.
 
 ## Usage
-After installation, you can use the command-line interface to read a binary cookie file:
+After installation, you can use the command-line interface to read a binary cookies file:
 
 ```bash
-bcr <path_to_binary_cookie_file>
+bcr <path_to_binary_cookies_file>
 ```
-Replace <path_to_binary_cookie_file> with the path to the binary cookie file you want to read.
+Replace <path_to_binary_cookies_file> with the path to the binary cookie file you want to read.
+
+e.g.,
+
+```bash
+bcr ~/Library/Cookies/Cookies.binarycookies
+```
 
 Or use it in Python:
 
