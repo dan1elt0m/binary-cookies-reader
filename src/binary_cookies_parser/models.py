@@ -40,8 +40,8 @@ class CookieFields(BaseModel):
     name_offset: BcField = BcField(offset=20, size=4, format=Format.integer)
     path_offset: BcField = BcField(offset=24, size=4, format=Format.integer)
     value_offset: BcField = BcField(offset=28, size=4, format=Format.integer)
-    expiry_date: BcField = BcField(offset=32, size=8, format=Format.date)
-    create_date: BcField = BcField(offset=40, size=8, format=Format.date)
+    expiry_date: BcField = BcField(offset=40, size=8, format=Format.date)
+    create_date: BcField = BcField(offset=48, size=8, format=Format.date)
 
 
 class FileFields(BaseModel):
