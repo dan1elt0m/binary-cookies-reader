@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from struct import unpack
 from typing import List
@@ -20,7 +20,7 @@ def interpret_flag(flags: int) -> str:
 
 def mac_epoch_to_date(epoch: int) -> datetime:
     """Converts a mac epoch time to a datetime object."""
-    return datetime.fromtimestamp(epoch + 978307200)
+    return datetime.fromtimestamp(epoch + 978307200, tz=timezone.utc)
 
 
 def read_next_string(cookie: BytesIO, offset: int) -> str:
@@ -57,7 +57,7 @@ def read_cookie(page: BytesIO, offset: int) -> Cookie:
     pathoffset = read_next_int(cookie)
     valueoffset = read_next_int(cookie)
 
-    cookie.read(8)
+    cookie.read(8)  # unknown
 
     expiry_datetime = mac_epoch_to_date(read_next_date(cookie))
     create_datetime = mac_epoch_to_date(read_next_date(cookie))
