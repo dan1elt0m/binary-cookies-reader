@@ -57,7 +57,7 @@ def read_cookie(page: BytesIO, offset: int) -> Cookie:
     pathoffset = read_next_int(cookie)
     valueoffset = read_next_int(cookie)
 
-    cookie.read(8)
+    cookie.read(8)  # unknown
 
     expiry_datetime = mac_epoch_to_date(read_next_date(cookie))
     create_datetime = mac_epoch_to_date(read_next_date(cookie))
