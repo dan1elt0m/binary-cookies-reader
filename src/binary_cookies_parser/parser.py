@@ -82,7 +82,7 @@ def get_cookie_offsets(page: BytesIO, num_cookies: int) -> List[int]:
 
 def get_file_pages(binary_file: BytesIO, num_pages: int) -> List[int]:
     return [
-        read_field(binary_file, BcField(offset=9 + (i * 4), size=4, format=Format.integer)) for i in range(num_pages)
+        read_field(binary_file, BcField(offset=8 + (i * 4), size=4, format=Format.integer_be)) for i in range(num_pages)
     ]
 
 
@@ -115,7 +115,7 @@ def read_binary_cookies_file(file_path: str) -> List[Cookie]:
         page_sizes = get_file_pages(data, num_pages)
 
         pages = []
-        data.seek(9 + (num_pages * 4))
+        data.seek(8 + (num_pages * 4))
         for ps in page_sizes:
             # Grab individual pages and each page will contain >= one cookie
             pages.append(data.read(ps))

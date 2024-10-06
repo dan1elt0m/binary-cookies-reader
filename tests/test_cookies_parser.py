@@ -91,10 +91,18 @@ def test_read_binary_cookies_file_multiple_pages(tmp_path):
             f.write(b"\x00\x00\x00\x4d")  # page size for first page
             f.write(b"\x00\x00\x00\x4d")  # page size for second page
             f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)  # first page content
-            f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)  # second page content
+            f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 64)  # second page content
 
         read_binary_cookies_file(str(file_path))
         assert mock_binary_cookies_reader.call_count == 2
+        assert (
+            mock_binary_cookies_reader.call_args_list[0][0][0].read()
+            == b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65
+        )
+        assert (
+            mock_binary_cookies_reader.call_args_list[1][0][0].read()
+            == b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 64
+        )
 
 
 def test_read_binary_cookies_file_not_a_cookie_file(tmp_path):
