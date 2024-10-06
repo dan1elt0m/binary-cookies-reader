@@ -1,6 +1,7 @@
 import typer
-from binary_cookies_parser.parser import read_binary_cookies_file
 from rich import print
+
+from binary_cookies_parser.parser import read_binary_cookies_file
 
 
 def cli(file_path: str):
