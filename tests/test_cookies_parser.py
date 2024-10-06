@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone
 from io import BytesIO
 from struct import pack
 from unittest.mock import ANY, patch
@@ -43,7 +43,7 @@ def test_read_date():
 
 def test_mac_epoch_to_date():
     epoch = 0  # This corresponds to 2001-01-01 00:00:00
-    expected_date = datetime(2001, 1, 1, 1, 0)
+    expected_date = datetime(2001, 1, 1, 0, 0, tzinfo=timezone.utc)
     assert mac_epoch_to_date(epoch) == expected_date
 
 
@@ -76,8 +76,8 @@ def test_read_cookie():
     assert cookie.url == "example.com"
     assert cookie.path == "/"
     assert cookie.flag == Flag.SECURE
-    assert cookie.create_datetime == datetime(2032, 1, 2, 1, 0)
-    assert cookie.expiry_datetime == datetime(2032, 1, 2, 1, 0)
+    assert cookie.create_datetime == datetime(2032, 1, 2, 0, 0, tzinfo=timezone.utc)
+    assert cookie.expiry_datetime == datetime(2032, 1, 2, 0, 0, tzinfo=timezone.utc)
 
 
 def test_binary_cookies_reader_with_mock():
