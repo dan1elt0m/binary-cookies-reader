@@ -3,7 +3,7 @@ from io import BytesIO
 from struct import unpack
 from typing import List
 
-from binary_cookies_parser.models import Cookie, Flag
+from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Flag, Format
 
 FLAGS = {
     0: "",
@@ -23,49 +23,46 @@ def mac_epoch_to_date(epoch: int) -> datetime:
     return datetime.fromtimestamp(epoch + 978307200, tz=timezone.utc)
 
 
-def read_next_string(cookie: BytesIO, offset: int) -> str:
-    """Reads a string from the given offset in the cookie."""
+def read_string(data: BytesIO, size: int) -> str:
+    """Reads a string from binary file."""
     result = ""
-    cookie.seek(offset - 4)
-    c = cookie.read(1)
+    count = 0
+    c = data.read(1)
     while unpack("<b", c)[0] != 0:
+        count += 1
+        if count > size:
+            break
         result += str(c.decode())
-        c = cookie.read(1)
+        c = data.read(1)
     return result
 
 
-def read_next_int(cookie: BytesIO) -> int:
-    return unpack("<i", cookie.read(4))[0]
+def read_field(data: BytesIO, field: BcField) -> int:
+    """Reads a field from binary data."""
+    data.seek(field.offset)
+    if field.format == Format.string:
+        return read_string(data, field.size)
+    return unpack(field.format, data.read(field.size))[0]
 
 
-def read_next_date(cookie: BytesIO) -> int:
-    return unpack("<d", cookie.read(8))[0]
-
-
-def read_cookie(page: BytesIO, offset: int) -> Cookie:
+def read_cookie(cookie: BytesIO, cookie_size: int) -> Cookie:
     """Reads a cookie from the given offset in the page."""
-    page.seek(offset)
-    cookiesize = read_next_int(page)
-    cookie = BytesIO(page.read(cookiesize))
 
-    cookie.read(4)  # unknown
-    flag = interpret_flag(read_next_int(cookie))
-    cookie.read(4)  # unknown
+    cookie_fields = CookieFields()
+    flag = interpret_flag(read_field(cookie, cookie_fields.flag))
 
-    urloffset = read_next_int(cookie)
-    nameoffset = read_next_int(cookie)
-    pathoffset = read_next_int(cookie)
-    valueoffset = read_next_int(cookie)
+    url_offset = read_field(cookie, cookie_fields.url_offset)
+    name_offset = read_field(cookie, cookie_fields.name_offset)
+    path_offset = read_field(cookie, cookie_fields.path_offset)
+    value_offset = read_field(cookie, cookie_fields.value_offset)
 
-    cookie.read(8)  # unknown
+    expiry_datetime = mac_epoch_to_date(read_field(cookie, cookie_fields.expiry_date))
+    create_datetime = mac_epoch_to_date(read_field(cookie, cookie_fields.create_date))
 
-    expiry_datetime = mac_epoch_to_date(read_next_date(cookie))
-    create_datetime = mac_epoch_to_date(read_next_date(cookie))
-
-    url = read_next_string(cookie, urloffset)
-    name = read_next_string(cookie, nameoffset)
-    path = read_next_string(cookie, pathoffset)
-    value = read_next_string(cookie, valueoffset)
+    url = read_field(cookie, BcField(offset=url_offset, size=name_offset - url_offset, format=Format.string))
+    name = read_field(cookie, BcField(offset=name_offset, size=path_offset - name_offset, format=Format.string))
+    path = read_field(cookie, BcField(offset=path_offset, size=value_offset - path_offset, format=Format.string))
+    value = read_field(cookie, BcField(offset=value_offset, size=cookie_size - value_offset, format=Format.string))
 
     return Cookie(
         name=name,
@@ -78,42 +75,53 @@ def read_cookie(page: BytesIO, offset: int) -> Cookie:
     )
 
 
-def binary_cookies_reader(page: bytes) -> List[Cookie]:
+def get_cookie_offsets(page: BytesIO, num_cookies: int) -> List[int]:
+    """Reads the offsets of the cookies in the page."""
+    return [read_field(page, BcField(offset=4 + (4 * i), size=4, format=Format.integer)) for i in range(num_cookies)]
+
+
+def get_file_pages(binary_file: BytesIO, num_pages: int) -> List[int]:
+    return [
+        read_field(binary_file, BcField(offset=9 + (i * 4), size=4, format=Format.integer)) for i in range(num_pages)
+    ]
+
+
+def binary_cookies_reader(page: BytesIO) -> List[Cookie]:
     """Reads a binary cookie file and returns a list of cookies."""
-    page = BytesIO(page)
-    page.read(4)
-    num_cookies = read_next_int(page)
-
-    cookie_offsets = [unpack("<i", page.read(4))[0] for _ in range(num_cookies)]
-    page.read(4)
-
-    return [read_cookie(page, offset) for offset in cookie_offsets]
+    num_cookies = read_field(page, BcField(offset=4, size=4, format=Format.integer))
+    cookie_offsets = get_cookie_offsets(page, num_cookies)
+    cookies = []
+    for offset in cookie_offsets:
+        page.seek(offset)
+        cookie_size = read_field(page, BcField(offset=8, size=4, format=Format.integer))
+        cookie = page.read(cookie_size)
+        cookies.append(read_cookie(BytesIO(cookie), cookie_size))
+    return cookies
 
 
 def read_binary_cookies_file(file_path: str) -> List[Cookie]:
     """Reads a binary cookie file and returns a list of cookies."""
     all_cookies = []
     with open(file_path, "rb") as binary_file:
-        file_header = binary_file.read(4).decode()  # File Magic String:cook
+        data: BytesIO = BytesIO(binary_file.read())
+        file_fields = FileFields()
+        file_header = read_field(data, field=file_fields.header)  # File Magic String:cook
 
         if str(file_header) != "cook":
             raise SystemExit("Not a Cookies.binarycookies file")
 
         # Number of pages in the binary file: 4 bytes
-        num_pages = unpack(">i", binary_file.read(4))[0]
-
-        page_sizes = []
-        for np in range(num_pages):
-            # Each page size: 4 bytes*number of pages
-            page_sizes.append(unpack(">i", binary_file.read(4))[0])
+        num_pages = read_field(data, field=file_fields.num_pages)
+        page_sizes = get_file_pages(data, num_pages)
 
         pages = []
+        data.seek(9 + (num_pages * 4))
         for ps in page_sizes:
             # Grab individual pages and each page will contain >= one cookie
-            pages.append(binary_file.read(ps))
+            pages.append(data.read(ps))
 
         for page in pages:
-            cookies = binary_cookies_reader(page)
+            cookies = binary_cookies_reader(BytesIO(page))
             all_cookies.extend(cookies)
 
     return all_cookies
