@@ -77,7 +77,7 @@ def read_cookie(cookie: BytesIO, cookie_size: int) -> Cookie:
 
 def get_cookie_offsets(page: BytesIO, num_cookies: int) -> List[int]:
     """Reads the offsets of the cookies in the page."""
-    return [read_field(page, BcField(offset=4 + (4 * i), size=4, format=Format.integer)) for i in range(num_cookies)]
+    return [read_field(page, BcField(offset=8 + (4 * i), size=4, format=Format.integer)) for i in range(num_cookies)]
 
 
 def get_file_pages(binary_file: BytesIO, num_pages: int) -> List[int]:
@@ -92,8 +92,8 @@ def binary_cookies_reader(page: BytesIO) -> List[Cookie]:
     cookie_offsets = get_cookie_offsets(page, num_cookies)
     cookies = []
     for offset in cookie_offsets:
+        cookie_size = read_field(page, BcField(offset=offset, size=4, format=Format.integer))
         page.seek(offset)
-        cookie_size = read_field(page, BcField(offset=8, size=4, format=Format.integer))
         cookie = page.read(cookie_size)
         cookies.append(read_cookie(BytesIO(cookie), cookie_size))
     return cookies

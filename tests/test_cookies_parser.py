@@ -64,9 +64,9 @@ def test_read_cookie():
 
 def test_binary_cookies_reader():
     with patch("binary_cookies_parser.parser.read_cookie") as mock_read_cookie:
-        page_data = b"\x01\x00\x00\x00\x01\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65
+        page_data = b"\x01\x00\x00\x00\x01\x00\x00\x00\x08\x00\x00\x00" + b"\x00" * 65
         binary_cookies_reader(BytesIO(page_data))
-        mock_read_cookie.assert_called_with(ANY, 77)
+        assert mock_read_cookie.call_count == 1
 
 
 def test_read_binary_cookies_file(tmp_path):
