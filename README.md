@@ -1,3 +1,5 @@
+[![Github Actions Status](https://github.com/dan1elt0m/binary-cookies-reader/workflows/test/badge.svg)](https://github.com/dan1elt0m/binary-cookies-reader/actions/workflows/test.yml)
+
 # Binary Cookies Reader
 
 This project provides a CLI tool to read and interpret binary cookie files.
