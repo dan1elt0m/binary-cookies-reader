@@ -8,7 +8,7 @@ packages = [{include = "binary_cookies_parser", from="src"}]
 
 [tool.poetry.dependencies]
 python = "^3.8"
-typer = ">=0.12.3,<0.15.0"
+typer = ">=0.12.3,<0.16.0"
 pydantic = "^2.8.2"
 pytest = "^8.2.2"
 
