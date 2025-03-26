@@ -6,7 +6,7 @@ from typing import List
 from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Flag, Format
 
 FLAGS = {
-    0: "",
+    0: Flag.UNKNOWN,
     1: Flag.SECURE,
     4: Flag.HTTPONLY,
     5: Flag.SECURE_HTTPONLY,
