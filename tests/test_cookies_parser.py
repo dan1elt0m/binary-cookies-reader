@@ -16,7 +16,7 @@ from binary_cookies_parser.parser import (
 
 
 def test_interpret_flag():
-    assert interpret_flag(0) == ""
+    assert interpret_flag(0) == Flag.UNKNOWN
     assert interpret_flag(1) == Flag.SECURE
     assert interpret_flag(4) == Flag.HTTPONLY
     assert interpret_flag(5) == Flag.SECURE_HTTPONLY
