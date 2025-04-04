@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "binary-cookies-parser"
-version = "1.0.0"
+version = "1.1.0"
 description = "Parses binary cookies from a given .binarycookies file"
 authors = ["Daniel Tom <daniel.tom@xebia.com>"]
 readme = "README.md"
