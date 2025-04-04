@@ -26,9 +26,9 @@ Replace <path_to_binary_cookies_file> with the path to the binary cookie file yo
 Or use it in Python:
 
 ```python
-from binary_cookies_parser.parser import read_binary_cookies_file
+from binary_cookies_parser import load 
 
-cookies = read_binary_cookies_file("path/to/cookies.binarycookies")
+cookies = load("path/to/cookies.binarycookies")
 ```
 
 ## Output Types
