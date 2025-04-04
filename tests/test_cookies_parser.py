@@ -5,6 +5,7 @@ from unittest.mock import ANY, patch
 
 import pytest
 
+from binary_cookies_parser import load
 from binary_cookies_parser.models import Flag
 from binary_cookies_parser.parser import (
     binary_cookies_reader,
@@ -113,3 +114,16 @@ def test_read_binary_cookies_file_not_a_cookie_file(tmp_path):
 
         with pytest.raises(SystemExit, match="Not a Cookies.binarycookies file"):
             read_binary_cookies_file(str(file_path))
+
+
+def test_load(tmp_path):
+    with patch("binary_cookies_parser.parser.binary_cookies_reader") as mock_binary_cookies_reader:
+        file_path = tmp_path / "Cookies.binarycookies"
+        with open(file_path, "wb") as f:
+            f.write(b"cook")  # File Magic String
+            f.write(b"\x00\x00\x00\x01")  # number of pages
+            f.write(b"\x00\x00\x00\x4d")  # page size
+            f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)
+
+        load(str(file_path))
+        mock_binary_cookies_reader.assert_called_with(ANY)
