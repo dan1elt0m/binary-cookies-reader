@@ -33,7 +33,7 @@ def cli(file_path: str, output: OutputType = "json"):
             print(f"Path: {cookie.path}")
             print(f"Created: {cookie.create_datetime.isoformat()}")
             print(f"Expires: {cookie.expiry_datetime.isoformat()}")
-            print(f"Flag: {cookie.flag}")
+            print(f"Flag: {cookie.flag.value}")
             print("-" * 40)
 
 

@@ -49,7 +49,8 @@ def read_cookie(cookie: BytesIO, cookie_size: int) -> Cookie:
     """Reads a cookie from the given offset in the page."""
 
     cookie_fields = CookieFields()
-    flag = interpret_flag(read_field(cookie, cookie_fields.flag))
+    flag_int = read_field(cookie, cookie_fields.flag)
+    flag = interpret_flag(flag_int)
 
     url_offset = read_field(cookie, cookie_fields.url_offset)
     name_offset = read_field(cookie, cookie_fields.name_offset)
