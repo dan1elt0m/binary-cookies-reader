@@ -76,7 +76,7 @@ def test_read_binary_cookies_file(tmp_path):
 
 
 def test_read_binary_cookies_file_multiple_pages(tmp_path):
-    with patch("binary_cookies_parser._deserialize._deserialize_page") as mock_binary_cookies_reader:
+    with patch("binarycookies._deserialize._deserialize_page") as mock_binary_cookies_reader:
         file_path = tmp_path / "Cookies.binarycookies"
         with open(file_path, "wb") as f:
             f.write(b"cook")  # File Magic String
@@ -100,7 +100,7 @@ def test_read_binary_cookies_file_multiple_pages(tmp_path):
 
 
 def test_read_binary_cookies_file_not_a_cookie_file(tmp_path):
-    with patch("binary_cookies_parser._deserialize._deserialize_page"):
+    with patch("binarycookies._deserialize._deserialize_page"):
         file_path = tmp_path / "Cookies.binarycookies"
         with open(file_path, "wb") as f:
             f.write(b"not a cookie file")

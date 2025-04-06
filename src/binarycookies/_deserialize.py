@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from io import BytesIO
 from struct import unpack
-from typing import BinaryIO, List
+from typing import BinaryIO, List, Union
 
 from binarycookies.models import (
     BcField,
@@ -45,7 +45,7 @@ def read_string(data: BytesIO, size: int) -> str:
     return result
 
 
-def read_field(data: BytesIO, field: BcField) -> str | int:
+def read_field(data: BytesIO, field: BcField) -> Union[str, int]:
     """Reads a field from binary data."""
     data.seek(field.offset)
     if field.format == Format.string:

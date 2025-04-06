@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 from io import BufferedWriter, BytesIO
 from struct import pack
-from typing import BinaryIO, Dict, List, Tuple
+from typing import BinaryIO, Dict, List, Tuple, Union
 
 from binarycookies._deserialize import FLAGS
 from binarycookies.models import BcField, Cookie, CookieFields, FileFields, Format
 
-type CookiesCollection = List[Dict] | List[Cookie] | Tuple[Dict] | Tuple[Cookie] | Cookie | Dict[str, str]
+type CookiesCollection = Union[List[Dict], List[Cookie], Tuple[Dict], Tuple[Cookie], Cookie, Dict[str, str]]
 
 
 def date_to_mac_epoch(date: datetime) -> int:
@@ -20,7 +20,7 @@ def write_string(data: BytesIO, value: str):
     data.write(value.encode() + b"\x00")
 
 
-def write_field(data: BytesIO, field: BcField, value: str | int):
+def write_field(data: BytesIO, field: BcField, value: Union[str, int]):
     """Writes a field to binary data."""
     data.seek(field.offset)
     if field.format == Format.string:
@@ -63,7 +63,7 @@ def serialize_cookie(cookie: Cookie) -> bytes:
     return cookie_data.getvalue()
 
 
-def dump(cookies: CookiesCollection, f: BufferedWriter | BytesIO | BinaryIO):
+def dump(cookies: CookiesCollection, f: Union[BufferedWriter, BytesIO, BinaryIO]):
     """Dumps a Binary Cookies object to create a binary cookies file.k
 
     Args:
