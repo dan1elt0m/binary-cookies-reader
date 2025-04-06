@@ -20,6 +20,7 @@ permissions:
 jobs:
   build-and-publish:
     runs-on: ubuntu-latest
+    environment: release       # needed for PyPI OIDC
 
     steps:
     - name: Checkout
