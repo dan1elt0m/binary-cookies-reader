@@ -49,7 +49,7 @@ cookie = {
 }
 
 with open("path/to/cookies.binarycookies", "wb") as f:
-    bcp.dumps(cookie, f)
+    bcp.dump(cookie, f)
 ```
 
 ## Output Types

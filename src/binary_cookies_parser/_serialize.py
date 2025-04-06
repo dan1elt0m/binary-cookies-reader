@@ -6,7 +6,7 @@ from typing import BinaryIO, Dict, List, Tuple
 from binary_cookies_parser._deserialize import FLAGS
 from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Format
 
-type CookiesCollection = List[Dict] | List[Cookie] | Tuple[Dict] | Tuple[Cookie]
+type CookiesCollection = List[Dict] | List[Cookie] | Tuple[Dict] | Tuple[Cookie] | Cookie | Dict[str, str]
 
 
 def date_to_mac_epoch(date: datetime) -> int:
@@ -63,7 +63,7 @@ def serialize_cookie(cookie: Cookie) -> bytes:
     return cookie_data.getvalue()
 
 
-def dump(cookies: Cookie | CookiesCollection, f: BufferedWriter | BytesIO | BinaryIO):
+def dump(cookies: CookiesCollection, f: BufferedWriter | BytesIO | BinaryIO):
     """Dumps a Binary Cookies object to create a binary cookies file.k
 
     Args:
@@ -74,7 +74,7 @@ def dump(cookies: Cookie | CookiesCollection, f: BufferedWriter | BytesIO | Bina
     f.write(binary)
 
 
-def dumps(cookies: Cookie | CookiesCollection | Dict) -> bytes:
+def dumps(cookies: CookiesCollection) -> bytes:
     """Dumps a Binary Cookies object to a byte string.
     Args:
         cookies: A Binary Cookies object to be serialized.
