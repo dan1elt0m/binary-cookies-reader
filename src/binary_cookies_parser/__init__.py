@@ -1,4 +1,4 @@
-from binary_cookies_parser.parser import read_binary_cookies_file as load
-from binary_cookies_parser.serialize import dump
+from binary_cookies_parser._deserialize import load, loads
+from binary_cookies_parser._serialize import dump, dumps
 
-__all__ = ["load", "dump"]
+__all__ = ["dump", "dumps", "load", "loads"]

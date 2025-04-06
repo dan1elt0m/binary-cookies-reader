@@ -6,14 +6,21 @@ from binary_cookies_parser.__main__ import cli
 
 def test_cli_json_output(tmp_path, capsys):
     file_path = tmp_path / "Cookies.binarycookies"
+    data = {
+        "name": "name",
+        "value": "value",
+        "url": "example.com",
+        "path": "/",
+        "create_datetime": 2032,
+        "expiry_datetime": 2032,
+        "flag": "Secure",
+    }
     with open(file_path, "wb") as f:
-        f.write(b"cook")  # File Magic String
-        f.write(b"\x00\x00\x00\x01")  # number of pages
-        f.write(b"\x00\x00\x00\x4d")  # page size
-        f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)
+        dump(data, f)
+
     cli(str(file_path), output="json")
     captured = capsys.readouterr()
-    output = json.loads(captured)
+    output = json.loads(captured.out)
     assert isinstance(output, list)
     assert len(output) > 0
     assert "name" in output[0]
@@ -36,7 +43,9 @@ def test_cli_ascii_output(tmp_path, capsys):
         "expiry_datetime": 2032,
         "flag": "Secure",
     }
-    dump(data, str(file_path))
+    with open(file_path, "wb") as f:
+        # Call the dump method
+        dump(data, f)
     cli(str(file_path), output="ascii")
     output = capsys.readouterr().out
 

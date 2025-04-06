@@ -15,7 +15,7 @@ pip install binary-cookies-parser
 ```
 If you want to use the parser as CLI, it's recommended to use pipx to install the package in an isolated environment.
 
-## Usage
+## Basic Usage CLI
 After installation, you can use the command-line interface to read a binary cookies file:
 
 ```bash
@@ -23,12 +23,33 @@ bcparser <path_to_binary_cookies_file>
 ```
 Replace <path_to_binary_cookies_file> with the path to the binary cookie file you want to read.
 
-Or use it in Python:
+### Basic Usage Python
+
+#### Deserialization
+```python
+import binary_cookies_parser as bcp 
+
+with open("path/to/cookies.binarycookies", "rb") as f:
+    cookies = bcp.load(f)
+```
+
+#### Serialization
 
 ```python
-from binary_cookies_parser import load 
+import binary_cookies_parser as bcp
 
-cookies = load("path/to/cookies.binarycookies")
+cookie = {
+    "name": "session_id",
+    "value": "abc123",
+    "url": "https://example.com",
+    "path": "/",
+    "create_datetime": "2023-10-01T12:34:56+00:00",
+    "expiry_datetime": "2023-12-31T23:59:59+00:00",
+    "flag": "Secure"
+}
+
+with open("path/to/cookies.binarycookies", "wb") as f:
+    bcp.dumps(cookie, f)
 ```
 
 ## Output Types
@@ -44,7 +65,7 @@ Example usage:
 bcparser path/to/cookies.binarycookies --output json
 ```
 
-example output:
+Example output JSON:
 ```json
 [
   {
@@ -75,7 +96,8 @@ Example usage:
 ```sh
 bcparser path/to/cookies.binarycookies --output ascii
 ```
-Example output:
+
+Example output ASCII:
 ```text
 Name: session_id
 Value: abc123
@@ -94,3 +116,9 @@ Expires: 2023-12-31T23:59:59+00:00
 Flag: HttpOnly
 ----------------------------------------
 ```
+
+### License
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+### Contributing
+Contributions are welcome! If you find a bug or have a feature request, please open an issue on GitHub. Pull requests are also welcome.

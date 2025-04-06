@@ -4,6 +4,14 @@ from enum import Enum
 from pydantic import BaseModel
 
 
+class BinaryCookiesDecodeError(Exception):
+    """Custom exception for binary cookies decoding errors."""
+
+    def __init__(self, message: str):
+        super().__init__(message)
+        self.message = message
+
+
 class Flag(str, Enum):
     SECURE = "Secure"
     HTTPONLY = "HttpOnly"

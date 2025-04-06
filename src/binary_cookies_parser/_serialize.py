@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
-from io import BytesIO
+from io import BufferedWriter, BytesIO
 from struct import pack
-from typing import Dict, List, Tuple
+from typing import BinaryIO, Dict, List, Tuple
 
+from binary_cookies_parser._deserialize import FLAGS
 from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Format
-from binary_cookies_parser.parser import FLAGS
 
 type CookiesCollection = List[Dict] | List[Cookie] | Tuple[Dict] | Tuple[Cookie]
 
@@ -35,8 +35,9 @@ def serialize_cookie(cookie: Cookie) -> bytes:
     cookie_fields = CookieFields()
     # Write flag
     write_field(cookie_data, cookie_fields.flag, list(FLAGS.keys())[list(FLAGS.values()).index(cookie.flag)])
+
     # Calculate offsets
-    url_offset = 56
+    url_offset = 56  # The actual cookies content always starts at byte 56
     name_offset = 1 + url_offset + len(cookie.url.encode("utf-8"))
     path_offset = 1 + name_offset + len(cookie.name.encode("utf-8"))
     value_offset = 1 + path_offset + len(cookie.path.encode("utf-8"))
@@ -62,8 +63,24 @@ def serialize_cookie(cookie: Cookie) -> bytes:
     return cookie_data.getvalue()
 
 
-def dump(cookies: Cookie | CookiesCollection | Dict, file_path: str):
-    """Dumps a JSON object to create a binary cookies file."""
+def dump(cookies: Cookie | CookiesCollection, f: BufferedWriter | BytesIO | BinaryIO):
+    """Dumps a Binary Cookies object to create a binary cookies file.k
+
+    Args:
+        cookies: A Binary Cookies object to be serialized.
+        f: The file-like object to write the binary cookies data to.
+    """
+    binary = dumps(cookies)
+    f.write(binary)
+
+
+def dumps(cookies: Cookie | CookiesCollection | Dict) -> bytes:
+    """Dumps a Binary Cookies object to a byte string.
+    Args:
+        cookies: A Binary Cookies object to be serialized.
+    Returns:
+        bytes: The serialized binary cookies data.
+    """
     if isinstance(cookies, dict):
         cookies = [Cookie.model_validate(cookies)]
     elif isinstance(cookies, (list, tuple)):
@@ -75,53 +92,51 @@ def dump(cookies: Cookie | CookiesCollection | Dict, file_path: str):
 
     file_fields = FileFields()
 
-    with open(file_path, "wb") as binary_file:
-        data = BytesIO()
+    data = BytesIO()
 
-        # Write file header
-        write_field(data, file_fields.header, "cook")
+    # Write file header
+    write_field(data, file_fields.header, "cook")
 
-        # Number of pages (1 for simplicity)
-        write_field(data, file_fields.num_pages, 1)
+    # Number of pages (1 for simplicity)
+    write_field(data, file_fields.num_pages, 1)
 
-        # Write number of cookies
-        data.write(pack(Format.integer, len(cookies)))
+    # Write number of cookies
+    data.write(pack(Format.integer, len(cookies)))
 
-        # Placeholder for page size
-        page_size_offset = data.tell()
-        data.write(b"\x00\x00\x00\x00")
+    # Placeholder for page size
+    page_size_offset = data.tell()
+    data.write(b"\x00\x00\x00\x00")
 
-        # Write number of cookies
-        data.write(pack(Format.integer, len(cookies)))
-        cookie_data_list = []
-        # Write cookies
-        for cookie in cookies:
-            cookie_data_list.append(serialize_cookie(cookie))
+    # Write number of cookies
+    data.write(pack(Format.integer, len(cookies)))
+    cookie_data_list = []
+    # Write cookies
+    for cookie in cookies:
+        cookie_data_list.append(serialize_cookie(cookie))
 
-        initial_cookie_offset = data.tell() + (len(cookies) * 4)
-        initial_cookie = True
-        previous_sizes = 0
-        for cookie_data in cookie_data_list:
-            if initial_cookie:
-                data.write(pack(Format.integer, initial_cookie_offset))
-                initial_cookie = False
-            else:
-                data.write(pack(Format.integer, previous_sizes + initial_cookie_offset))
+    initial_cookie_offset = data.tell() + (len(cookies) * 4)
+    initial_cookie = True
+    previous_sizes = 0
+    for cookie_data in cookie_data_list:
+        if initial_cookie:
+            data.write(pack(Format.integer, initial_cookie_offset))
+            initial_cookie = False
+        else:
+            data.write(pack(Format.integer, previous_sizes + initial_cookie_offset))
 
-            previous_sizes += len(cookie_data)
+        previous_sizes += len(cookie_data)
 
-        # unknown data
-        data.write(b"\x00\x00\x00\x00")
-        data.write(b"\x00\x00\x00\x00")
-        data.write(b"\x00\x00\x00\x00")
+    # Unknown data
+    data.write(b"\x00\x00\x00\x00")
+    data.write(b"\x00\x00\x00\x00")
+    data.write(b"\x00\x00\x00\x00")
 
-        for cookie_data in cookie_data_list:
-            data.write(cookie_data)
+    for cookie_data in cookie_data_list:
+        data.write(cookie_data)
 
-        # # Update page size
-        page_size = data.tell()
-        data.seek(page_size_offset)
-        data.write(pack(Format.integer, page_size))
+    # Update page size
+    page_size = data.tell()
+    data.seek(page_size_offset)
+    data.write(pack(Format.integer, page_size))
 
-        # Write to file
-        binary_file.write(data.getvalue())
+    return data.getvalue()

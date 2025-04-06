@@ -19,11 +19,14 @@ def test_dump(tmp_path):
     # Define the file path
     file_path = tmp_path / "Cookies.binarycookies"
 
-    # Call the dump method
-    dump(data, str(file_path))
+    with open(file_path, "wb") as f:
+        # Call the dump method
+        dump(data, f)
 
     # Read the file back and verify its contents
-    cookies = load(str(file_path))
+    with open(file_path, "rb") as f:
+        # Call the load method
+        cookies = load(f)
     assert len(cookies) == 1
     cookie = cookies[0]
     assert cookie.name == "name"
@@ -60,11 +63,15 @@ def test_dump_multiple_cookies(tmp_path):
     # Define the file path
     file_path = tmp_path / "Cookies.binarycookies"
 
-    # Call the dump method
-    dump(data, str(file_path))
+    with open(file_path, "wb") as f:
+        # Call the dump method
+        dump(data, f)
 
     # Read the file back and verify its contents
-    cookies = load(str(file_path))
+    with open(file_path, "rb") as f:
+        # Call the load method
+        cookies = load(f)
+
     assert len(cookies) == 2
 
     cookie1 = cookies[0]
