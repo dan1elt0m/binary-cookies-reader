@@ -57,6 +57,8 @@ jobs:
         git push -f  
         git push --tags -f
         
+        poetry build
+        
         echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
 
     - uses: pypa/gh-action-pypi-publish@release/v1    # publish
