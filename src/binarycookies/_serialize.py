@@ -1,12 +1,12 @@
 from datetime import datetime, timezone
 from io import BufferedWriter, BytesIO
 from struct import pack
-from typing import BinaryIO, Dict, List, Tuple, Union
+from typing import BinaryIO, Dict, List, Tuple, TypeAlias, Union
 
 from binarycookies._deserialize import FLAGS
 from binarycookies.models import BcField, Cookie, CookieFields, FileFields, Format
 
-type CookiesCollection = Union[List[Dict], List[Cookie], Tuple[Dict], Tuple[Cookie], Cookie, Dict[str, str]]
+CookiesCollection: TypeAlias = Union[List[Dict], List[Cookie], Tuple[Dict], Tuple[Cookie], Cookie, Dict[str, str]]
 
 
 def date_to_mac_epoch(date: datetime) -> int:
