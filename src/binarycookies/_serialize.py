@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from io import BufferedWriter, BytesIO
 from struct import pack
