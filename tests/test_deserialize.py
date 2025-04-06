@@ -1,19 +1,12 @@
 from datetime import datetime, timezone
-from io import BytesIO
 from struct import pack
-from unittest.mock import ANY, patch
+from unittest.mock import patch
 
 import pytest
 
-from binary_cookies_parser import load
-from binary_cookies_parser.models import Flag
-from binary_cookies_parser.parser import (
-    binary_cookies_reader,
-    interpret_flag,
-    mac_epoch_to_date,
-    read_binary_cookies_file,
-    read_cookie,
-)
+from binarycookies import dump
+from binarycookies._deserialize import interpret_flag, load, mac_epoch_to_date, read_cookie
+from binarycookies.models import BinaryCookiesDecodeError, Cookie, Flag
 
 
 def test_interpret_flag():
@@ -63,28 +56,27 @@ def test_read_cookie():
     assert cookie.expiry_datetime == datetime(2032, 1, 2, 0, 0, tzinfo=timezone.utc)
 
 
-def test_binary_cookies_reader():
-    with patch("binary_cookies_parser.parser.read_cookie") as mock_read_cookie:
-        page_data = b"\x01\x00\x00\x00\x01\x00\x00\x00\x08\x00\x00\x00" + b"\x00" * 65
-        binary_cookies_reader(BytesIO(page_data))
-        assert mock_read_cookie.call_count == 1
-
-
 def test_read_binary_cookies_file(tmp_path):
-    with patch("binary_cookies_parser.parser.binary_cookies_reader") as mock_binary_cookies_reader:
-        file_path = tmp_path / "Cookies.binarycookies"
-        with open(file_path, "wb") as f:
-            f.write(b"cook")  # File Magic String
-            f.write(b"\x00\x00\x00\x01")  # number of pages
-            f.write(b"\x00\x00\x00\x4d")  # page size
-            f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)
+    cookie = Cookie(
+        name="name",
+        value="value",
+        url="example.com",
+        path="/",
+        flag=Flag.SECURE,
+        create_datetime=datetime(2032, 1, 2, 0, 0, tzinfo=timezone.utc),
+        expiry_datetime=datetime(2032, 1, 2, 0, 0, tzinfo=timezone.utc),
+    )
+    file_path = tmp_path / "Cookies.binarycookies"
 
-        read_binary_cookies_file(str(file_path))
-        mock_binary_cookies_reader.assert_called_with(ANY)
+    with open(file_path, "wb") as f:
+        dump(cookie, f)
+    with open(file_path, "rb") as f:
+        [result_cookie] = load(f)
+    assert result_cookie == cookie
 
 
 def test_read_binary_cookies_file_multiple_pages(tmp_path):
-    with patch("binary_cookies_parser.parser.binary_cookies_reader") as mock_binary_cookies_reader:
+    with patch("binarycookies._deserialize._deserialize_page") as mock_binary_cookies_reader:
         file_path = tmp_path / "Cookies.binarycookies"
         with open(file_path, "wb") as f:
             f.write(b"cook")  # File Magic String
@@ -94,7 +86,8 @@ def test_read_binary_cookies_file_multiple_pages(tmp_path):
             f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)  # first page content
             f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 64)  # second page content
 
-        read_binary_cookies_file(str(file_path))
+        with open(file_path, "rb") as f:
+            load(f)
         assert mock_binary_cookies_reader.call_count == 2
         assert (
             mock_binary_cookies_reader.call_args_list[0][0][0].read()
@@ -107,23 +100,16 @@ def test_read_binary_cookies_file_multiple_pages(tmp_path):
 
 
 def test_read_binary_cookies_file_not_a_cookie_file(tmp_path):
-    with patch("binary_cookies_parser.parser.binary_cookies_reader"):
+    with patch("binarycookies._deserialize._deserialize_page"):
         file_path = tmp_path / "Cookies.binarycookies"
         with open(file_path, "wb") as f:
             f.write(b"not a cookie file")
 
-        with pytest.raises(SystemExit, match="Not a Cookies.binarycookies file"):
-            read_binary_cookies_file(str(file_path))
-
-
-def test_load(tmp_path):
-    with patch("binary_cookies_parser.parser.binary_cookies_reader") as mock_binary_cookies_reader:
-        file_path = tmp_path / "Cookies.binarycookies"
-        with open(file_path, "wb") as f:
-            f.write(b"cook")  # File Magic String
-            f.write(b"\x00\x00\x00\x01")  # number of pages
-            f.write(b"\x00\x00\x00\x4d")  # page size
-            f.write(b"\x01\x00\x00\x00\x04\x00\x00\x00\x4d\x00\x00\x00" + b"\x00" * 65)
-
-        load(str(file_path))
-        mock_binary_cookies_reader.assert_called_with(ANY)
+        with (
+            pytest.raises(
+                BinaryCookiesDecodeError,
+                match="The file is not a valid binary cookies file. Missing magic String:cook.",
+            ),
+            open(file_path, "rb") as f,
+        ):
+            load(f)

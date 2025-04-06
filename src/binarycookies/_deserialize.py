@@ -1,9 +1,17 @@
 from datetime import datetime, timezone
 from io import BytesIO
 from struct import unpack
-from typing import List
+from typing import BinaryIO, List, Union
 
-from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Flag, Format
+from binarycookies.models import (
+    BcField,
+    BinaryCookiesDecodeError,
+    Cookie,
+    CookieFields,
+    FileFields,
+    Flag,
+    Format,
+)
 
 FLAGS = {
     0: Flag.UNKNOWN,
@@ -13,7 +21,7 @@ FLAGS = {
 }
 
 
-def interpret_flag(flags: int) -> str:
+def interpret_flag(flags: int) -> Flag:
     """Interprets the flags of a cookie and returns a human-readable string."""
     return FLAGS.get(flags, Flag.UNKNOWN)
 
@@ -37,7 +45,7 @@ def read_string(data: BytesIO, size: int) -> str:
     return result
 
 
-def read_field(data: BytesIO, field: BcField) -> int:
+def read_field(data: BytesIO, field: BcField) -> Union[str, int]:
     """Reads a field from binary data."""
     data.seek(field.offset)
     if field.format == Format.string:
@@ -49,7 +57,8 @@ def read_cookie(cookie: BytesIO, cookie_size: int) -> Cookie:
     """Reads a cookie from the given offset in the page."""
 
     cookie_fields = CookieFields()
-    flag = interpret_flag(read_field(cookie, cookie_fields.flag))
+    flag_int = read_field(cookie, cookie_fields.flag)
+    flag = interpret_flag(flag_int)
 
     url_offset = read_field(cookie, cookie_fields.url_offset)
     name_offset = read_field(cookie, cookie_fields.name_offset)
@@ -81,12 +90,13 @@ def get_cookie_offsets(page: BytesIO, num_cookies: int) -> List[int]:
 
 
 def get_file_pages(binary_file: BytesIO, num_pages: int) -> List[int]:
+    """Reads the sizes of the pages in the binary file."""
     return [
         read_field(binary_file, BcField(offset=8 + (i * 4), size=4, format=Format.integer_be)) for i in range(num_pages)
     ]
 
 
-def binary_cookies_reader(page: BytesIO) -> List[Cookie]:
+def _deserialize_page(page: BytesIO) -> List[Cookie]:
     """Reads a binary cookie file and returns a list of cookies."""
     num_cookies = read_field(page, BcField(offset=4, size=4, format=Format.integer))
     cookie_offsets = get_cookie_offsets(page, num_cookies)
@@ -99,29 +109,47 @@ def binary_cookies_reader(page: BytesIO) -> List[Cookie]:
     return cookies
 
 
-def read_binary_cookies_file(file_path: str) -> List[Cookie]:
-    """Reads a binary cookie file and returns a list of cookies."""
+def load(bf: BinaryIO) -> List[Cookie]:
+    """Deserializes a binary cookie file and returns a list of Cookie objects.
+    Args:
+        bf (BinaryIO): A binary file object containing the binary cookie data."""
+    # Check if the file is empty
+    if bf.readable() and bf.read(1) == b"":
+        raise BinaryCookiesDecodeError("The file is empty.")
+    # Reset the file pointer to the beginning
+    bf.seek(0)
+    # Check if the file is a valid binary cookies file
+    if bf.readable() and bf.read(4) != b"cook":
+        raise BinaryCookiesDecodeError("The file is not a valid binary cookies file. Missing magic String:cook.")
+    # Reset the file pointer to the beginning
+    bf.seek(0)
+    # Deserialize the binary cookies file
+    return loads(BytesIO(bf.read()))
+
+
+def loads(b: BytesIO) -> List[Cookie]:
+    """Deserializes a binary cookie file and returns a list of Cookie objects.
+
+    Args:
+        b (BytesIO): A BytesIO object containing the binary cookie data.
+    Returns:
+        List[Cookie]: A list of Cookie objects.
+    """
     all_cookies = []
-    with open(file_path, "rb") as binary_file:
-        data: BytesIO = BytesIO(binary_file.read())
-        file_fields = FileFields()
-        file_header = read_field(data, field=file_fields.header)  # File Magic String:cook
+    file_fields = FileFields()
 
-        if str(file_header) != "cook":
-            raise SystemExit("Not a Cookies.binarycookies file")
+    # Number of pages in the binary file: 4 bytes
+    num_pages = read_field(b, field=file_fields.num_pages)
+    page_sizes = get_file_pages(b, num_pages)
 
-        # Number of pages in the binary file: 4 bytes
-        num_pages = read_field(data, field=file_fields.num_pages)
-        page_sizes = get_file_pages(data, num_pages)
+    pages = []
+    b.seek(8 + (num_pages * 4))
+    for ps in page_sizes:
+        # Grab individual pages and each page will contain >= one cookie
+        pages.append(b.read(ps))
 
-        pages = []
-        data.seek(8 + (num_pages * 4))
-        for ps in page_sizes:
-            # Grab individual pages and each page will contain >= one cookie
-            pages.append(data.read(ps))
-
-        for page in pages:
-            cookies = binary_cookies_reader(BytesIO(page))
-            all_cookies.extend(cookies)
+    for page in pages:
+        cookies = _deserialize_page(BytesIO(page))
+        all_cookies.extend(cookies)
 
     return all_cookies

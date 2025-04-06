@@ -6,7 +6,7 @@ from typing import Type
 import typer
 from rich import print
 
-from binary_cookies_parser.parser import read_binary_cookies_file
+from binarycookies import load
 
 
 class DateTimeEncoder(json.JSONEncoder):
@@ -21,8 +21,10 @@ class OutputType(str, Enum):
     ascii = "ascii"
 
 
-def cli(file_path: str, output: OutputType = "json"):
-    cookies = read_binary_cookies_file(file_path)
+def cli(file_path: str, output: str = "json"):
+    """CLI entrypoint for reading Binary Cookies"""
+    with open(file_path, "rb") as f:
+        cookies = load(f)
     if output == OutputType.json:
         print(json.dumps([cookie.model_dump() for cookie in cookies], indent=2, cls=DateTimeEncoder))
     elif output == OutputType.ascii:
@@ -33,12 +35,12 @@ def cli(file_path: str, output: OutputType = "json"):
             print(f"Path: {cookie.path}")
             print(f"Created: {cookie.create_datetime.isoformat()}")
             print(f"Expires: {cookie.expiry_datetime.isoformat()}")
-            print(f"Flag: {cookie.flag}")
+            print(f"Flag: {cookie.flag.value}")
             print("-" * 40)
 
 
 def main():
-    """CLI entrypoint for reading binarycookies files"""
+    """CLI entrypoint for reading Binary Cookies"""
     typer.run(cli)
 
 
