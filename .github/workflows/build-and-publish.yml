@@ -60,18 +60,6 @@ jobs:
         
         echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
 
-    - name: Create Release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        tag_name: v${{ env.NEW_VERSION }}
-        release_name: v${{ env.NEW_VERSION }}
-        body: |
-          pypi package: https://pypi.org/project/binary-cookies-parser/${{ env.NEW_VERSION }}/
-        draft: false
-        prerelease: false
-
     - name: Create Release 2
       uses: actions/create-release@v1
       env:
