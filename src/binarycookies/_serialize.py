@@ -3,8 +3,8 @@ from io import BufferedWriter, BytesIO
 from struct import pack
 from typing import BinaryIO, Dict, List, Tuple
 
-from binary_cookies_parser._deserialize import FLAGS
-from binary_cookies_parser.models import BcField, Cookie, CookieFields, FileFields, Format
+from binarycookies._deserialize import FLAGS
+from binarycookies.models import BcField, Cookie, CookieFields, FileFields, Format
 
 type CookiesCollection = List[Dict] | List[Cookie] | Tuple[Dict] | Tuple[Cookie] | Cookie | Dict[str, str]
 

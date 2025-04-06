@@ -4,7 +4,7 @@ version = "1.1.1"
 description = "Python Binary Cookies (de)serializer"
 authors = ["Daniel Tom <d.e.tom89@gmail.com>"]
 readme = "README.md"
-packages = [{include = "binary_cookies_parser", from="src"}]
+packages = [{include = "binarycookies", from="src"}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<4.0"
@@ -12,7 +12,7 @@ typer = ">=0.12.3,<0.17.0"
 pydantic = ">=2.0.0,<3.0.0"
 
 [tool.poetry.scripts]
-bcparser = "binary_cookies_parser.__main__:main"
+bcparser = "binarycookies.__main__:main"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"

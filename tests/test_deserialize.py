@@ -4,9 +4,9 @@ from unittest.mock import patch
 
 import pytest
 
-from binary_cookies_parser import dump
-from binary_cookies_parser._deserialize import interpret_flag, load, mac_epoch_to_date, read_cookie
-from binary_cookies_parser.models import BinaryCookiesDecodeError, Cookie, Flag
+from binarycookies import dump
+from binarycookies._deserialize import interpret_flag, load, mac_epoch_to_date, read_cookie
+from binarycookies.models import BinaryCookiesDecodeError, Cookie, Flag
 
 
 def test_interpret_flag():

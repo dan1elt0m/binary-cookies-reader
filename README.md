@@ -1,9 +1,8 @@
 [![Github Actions Status](https://github.com/dan1elt0m/binary-cookies-reader/workflows/test/badge.svg)](https://github.com/dan1elt0m/binary-cookies-reader/actions/workflows/test.yml)
 
-# Binary Cookies Reader
+# Binary Cookies
 
-This project provides a CLI tool to read and interpret binary cookie files.
-The project is based on the cookie reader written by Satishb3 
+Python library and CLI tool for reading and writing binary cookies files.
 
 ## Requirements
 
@@ -14,6 +13,9 @@ The project is based on the cookie reader written by Satishb3
 pip install binary-cookies-parser
 ```
 If you want to use the parser as CLI, it's recommended to use pipx to install the package in an isolated environment.
+```bash 
+pipx install binary-cookies-parser
+```
 
 ## Basic Usage CLI
 After installation, you can use the command-line interface to read a binary cookies file:
@@ -26,17 +28,18 @@ Replace <path_to_binary_cookies_file> with the path to the binary cookie file yo
 ### Basic Usage Python
 
 #### Deserialization
+
 ```python
-import binary_cookies_parser as bcp 
+import binarycookies 
 
 with open("path/to/cookies.binarycookies", "rb") as f:
-    cookies = bcp.load(f)
+    cookies = binarycookies.load(f)
 ```
 
 #### Serialization
 
 ```python
-import binary_cookies_parser as bcp
+import binarycookies 
 
 cookie = {
     "name": "session_id",
@@ -49,7 +52,7 @@ cookie = {
 }
 
 with open("path/to/cookies.binarycookies", "wb") as f:
-    bcp.dump(cookie, f)
+    binarycookies.dump(cookie, f)
 ```
 
 ## Output Types

@@ -1,7 +1,7 @@
 import json
 
-from binary_cookies_parser import dump
-from binary_cookies_parser.__main__ import cli
+from binarycookies import dump
+from binarycookies.__main__ import cli
 
 
 def test_cli_json_output(tmp_path, capsys):

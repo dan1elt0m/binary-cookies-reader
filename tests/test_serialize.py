@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from binary_cookies_parser import dump, load
+from binarycookies import dump, load
 
 
 def test_dump(tmp_path):

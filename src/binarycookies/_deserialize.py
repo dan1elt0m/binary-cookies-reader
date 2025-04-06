@@ -3,7 +3,7 @@ from io import BytesIO
 from struct import unpack
 from typing import BinaryIO, List
 
-from binary_cookies_parser.models import (
+from binarycookies.models import (
     BcField,
     BinaryCookiesDecodeError,
     Cookie,
@@ -90,6 +90,7 @@ def get_cookie_offsets(page: BytesIO, num_cookies: int) -> List[int]:
 
 
 def get_file_pages(binary_file: BytesIO, num_pages: int) -> List[int]:
+    """Reads the sizes of the pages in the binary file."""
     return [
         read_field(binary_file, BcField(offset=8 + (i * 4), size=4, format=Format.integer_be)) for i in range(num_pages)
     ]

@@ -6,7 +6,7 @@ from typing import Type
 import typer
 from rich import print
 
-from binary_cookies_parser import load
+from binarycookies import load
 
 
 class DateTimeEncoder(json.JSONEncoder):
