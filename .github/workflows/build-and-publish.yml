@@ -1,4 +1,4 @@
-name: Build and Publish
+name: release
 on:
   workflow_dispatch: # Only manual trigger and only for the main branch
     branches:
@@ -60,7 +60,8 @@ jobs:
         
         echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_ENV
 
-    - name: Create Release 2
+    - uses: pypa/gh-action-pypi-publish@release/v1    # publish
+    - name: Create Release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
