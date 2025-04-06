@@ -10,11 +10,11 @@ Python library and CLI tool for reading and writing binary cookies files.
 
 ## Installation
 ```bash 
-pip install binary-cookies-parser
+pip install binarycookies
 ```
 If you want to use the parser as CLI, it's recommended to use pipx to install the package in an isolated environment.
 ```bash 
-pipx install binary-cookies-parser
+pipx install binarycookies
 ```
 
 ## Basic Usage CLI
