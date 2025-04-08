@@ -1,6 +1,7 @@
 import json
 from datetime import datetime
 from enum import Enum
+from sys import stdout
 from typing import Type
 
 import typer
@@ -26,7 +27,7 @@ def cli(file_path: str, output: str = "json"):
     with open(file_path, "rb") as f:
         cookies = load(f)
     if output == OutputType.json:
-        print(json.dumps([cookie.model_dump() for cookie in cookies], indent=2, cls=DateTimeEncoder))
+        json.dump([cookie.model_dump() for cookie in cookies], indent=2, cls=DateTimeEncoder, fp=stdout)
     elif output == OutputType.ascii:
         for cookie in cookies:
             print(f"Name: {cookie.name}")
