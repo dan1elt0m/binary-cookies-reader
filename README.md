@@ -2,7 +2,7 @@
 
 # Binary Cookies
 
-Python library and CLI tool for reading and writing binary cookies files.
+Python library and CLI tool for reading and writing binary cookies.
 
 ## Requirements
 
