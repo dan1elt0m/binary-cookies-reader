@@ -111,8 +111,12 @@ def _deserialize_page(page: BytesIO) -> List[Cookie]:
 
 def load(bf: BinaryIO) -> List[Cookie]:
     """Deserializes a binary cookie file and returns a list of Cookie objects.
+
     Args:
-        bf (BinaryIO): A binary file object containing the binary cookie data."""
+        bf (BinaryIO): A binary file object containing the binary cookie data.
+    Returns:
+        List[Cookie]: A list of Cookie objects.
+    """
     # Check if the file is empty
     if bf.readable() and bf.read(1) == b"":
         raise BinaryCookiesDecodeError("The file is empty.")
