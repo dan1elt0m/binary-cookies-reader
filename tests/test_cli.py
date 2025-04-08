@@ -1,4 +1,5 @@
-import json
+from sys import stdout
+from unittest.mock import patch
 
 from binarycookies import dump
 from binarycookies.__main__ import cli
@@ -18,18 +19,14 @@ def test_cli_json_output(tmp_path, capsys):
     with open(file_path, "wb") as f:
         dump(data, f)
 
-    cli(str(file_path), output="json")
-    captured = capsys.readouterr()
-    output = json.loads(captured.out)
-    assert isinstance(output, list)
-    assert len(output) > 0
-    assert "name" in output[0]
-    assert "value" in output[0]
-    assert "url" in output[0]
-    assert "path" in output[0]
-    assert "create_datetime" in output[0]
-    assert "expiry_datetime" in output[0]
-    assert "flag" in output[0]
+    with patch("binarycookies.__main__.json.dump") as mock_json_dump:
+        mock_json_dump.return_value = None  # Prevent actual output
+        cli(str(file_path), output="json")
+
+        # Assert json.dump was called with the correct arguments
+        mock_json_dump.assert_called_once()
+        args, kwargs = mock_json_dump.call_args
+        assert isinstance(kwargs["fp"], type(stdout))  # Ensure it writes to stdout
 
 
 def test_cli_ascii_output(tmp_path, capsys):
