@@ -4,7 +4,16 @@
 
 Python library and CLI tool for reading and writing Binary Cookies.
 
-## CLI example:
+### Requirements
+
+- Python >= 3.9
+
+### Installation
+```bash 
+pip install binarycookies
+```
+
+### CLI example:
 ```sh
 bcparser path/to/cookies.binarycookies
 ```
@@ -33,15 +42,6 @@ Output:
 ]
 ```
 
-## Requirements
-
-- Python 3.9 or higher
-
-## Installation
-```bash 
-pip install binarycookies
-```
-If you want to use the parser as CLI, it's recommended to use `pipx` to install the package in an isolated environment.
 
 ### ASCII Output
 
