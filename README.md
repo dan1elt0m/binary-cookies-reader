@@ -43,9 +43,9 @@ pip install binarycookies
 ```
 If you want to use the parser as CLI, it's recommended to use `pipx` to install the package in an isolated environment.
 
-## Output Types
+## Output
 
-The `bcparser` CLI also supports `ascii` output.
+`ascii` output is also possible with the --output ascii flag.
 
 Example usage:
 ```sh
