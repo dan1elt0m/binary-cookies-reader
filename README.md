@@ -4,7 +4,7 @@
 
 Python library and CLI tool for reading and writing Binary Cookies.
 
-Example:
+## CLI example:
 ```sh
 bcparser path/to/cookies.binarycookies
 ```
