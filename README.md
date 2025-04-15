@@ -41,17 +41,8 @@ Output:
 ```bash 
 pip install binarycookies
 ```
-If you want to use the parser as CLI, it's recommended to use pipx to install the package in an isolated environment.
-```bash 
-pipx install binarycookies
-```
+If you want to use the parser as CLI, it's recommended to use `pipx` to install the package in an isolated environment.
 
-## Basic Usage CLI
-After installation, you can use the command-line interface to read a binary cookies file:
-
-```bash
-bcparser path/to/binarycookies
-```
 ## Output Types
 
 The `bcparser` CLI also supports `ascii` output.
@@ -111,7 +102,6 @@ cookie = {
 with open("path/to/cookies.binarycookies", "wb") as f:
     binarycookies.dump(cookie, f)
 ```
-
 
 ### License
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
