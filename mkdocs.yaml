@@ -1,0 +1,61 @@
+site_name: binarycookies
+repo_url: https://github.com/dan1elt0m/binarycookies
+repo_name: dan1elt0m/binarycookies
+site_author: Daniël Tom
+edit_uri: ""
+
+theme:
+  name: "material"
+  font:
+    text: Raleway
+  palette:
+    - scheme: default
+      primary: blue grey
+      toggle:
+        icon: material/theme-light-dark
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue grey
+      toggle:
+        icon: material/theme-light-dark
+        name: Switch to light mode
+  icon:
+    logo: material/cookie
+    repo: fontawesome/brands/github
+  features:
+    - content.code.annotate
+    - navigation.instant
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.sections
+
+nav:
+  - Home: index.md
+  - CLI: cli.md
+  - API Reference:
+    - binarycookies: api.md
+
+plugins:
+  - search
+  - literate-nav:
+      nav_file: SUMMARY.md
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          selection:
+            members: false  # Don't document members by default
+          rendering:
+            show_source: true
+            show_if_no_docstring: false
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.details
+  - attr_list
+  - md_in_html
+  - admonition

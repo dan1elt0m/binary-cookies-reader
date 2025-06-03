@@ -11,13 +11,24 @@ python = ">=3.8,<4.0"
 typer = ">=0.12.3,<0.17.0"
 pydantic = ">=2.0.0,<3.0.0"
 
-[tool.poetry.scripts]
-bcparser = "binarycookies.__main__:main"
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.2"
 ruff = ">=0.5.1,<0.8.0"
 pytest-cov = "^5.0.0"
+
+[tool.poetry.group.docs.dependencies]
+mkdocs = "^1.4.2"
+mkdocs-material = "^9.1.4"
+mkdocs-gen-files = ">=0.4,<0.6"
+mkdocs-literate-nav = "^0.6.0"
+mkdocstrings = {extras = ["python"], version = ">=0.20,<0.30"}
+mkautodoc = "^0.2.0"
+pymdown-extensions = "^10.0.1"
+
+[tool.poetry.scripts]
+bcparser = "binarycookies.__main__:main"
+
+
 
 [build-system]
 requires = ["poetry-core"]

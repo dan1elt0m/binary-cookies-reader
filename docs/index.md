@@ -1,8 +1,6 @@
 [![Github Actions Status](https://github.com/dan1elt0m/binary-cookies-reader/workflows/test/badge.svg)](https://github.com/dan1elt0m/binary-cookies-reader/actions/workflows/test.yml)
-<h1>
-  <img src="docs/bincook.png" width="30" style="vertical-align: middle; margin-right: 10px;">
-  Binary Cookies
-</h1>
+
+# Binary Cookies
 
 Python library and CLI tool for reading and writing binary cookies files.
 
@@ -121,9 +119,6 @@ Expires: 2023-12-31T23:59:59+00:00
 Flag: HttpOnly
 ----------------------------------------
 ```
-
-### License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ### Contributing
 Contributions are welcome! If you find a bug or have a feature request, please open an issue on GitHub. Pull requests are also welcome.
